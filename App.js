@@ -478,10 +478,11 @@ export default function App() {
     if (process.env.EXPO_PUBLIC_SHOTS !== '1') return;
     const plan = [
       [0, { name: 'home' }],
-      [7, { name: 'tool', id: 'wind_triangle' }],
-      [14, { name: 'tool', id: 'density_alt' }],
-      [21, { name: 'tool', id: 'wb' }],
-      [28, { name: 'log' }],
+      [12, { name: 'tool', id: 'wind_triangle' }],
+      [24, { name: 'tool', id: 'density_alt' }],
+      [36, { name: 'tool', id: 'crosswind' }],
+      [48, { name: 'tool', id: 'tod' }],
+      [60, { name: 'log' }],
     ];
     const timers = plan.map(([sec, r]) => setTimeout(() => go(r), sec * 1000));
     return () => timers.forEach(clearTimeout);
