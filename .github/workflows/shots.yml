@@ -61,8 +61,8 @@ jobs:
           xcrun simctl launch --terminate-running-process "$DEV" "$BUNDLE_ID"
           OUT="$RUNNER_TEMP/shots"
           mkdir -p "$OUT"
-          # tour: Home 0s · Wind triangle 7s · Density altitude 14s · W&B 21s · Flight log 28s
-          for t in $(seq 1 40); do
+          # tour: Home 0s · Wind triangle 12s · Density altitude 24s · Crosswind 36s · TOD 48s · Flight log 60s
+          for t in $(seq 1 70); do
             xcrun simctl io "$DEV" screenshot "$OUT/f$(printf '%02d' $t).png" >/dev/null 2>&1
             sleep 1
           done
