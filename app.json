@@ -1,0 +1,35 @@
+{
+  "name": "PilotCalc",
+  "slug": "pilotcalc",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "scheme": "pilotcalc",
+  "userInterfaceStyle": "dark",
+  "newArchEnabled": true,
+  "icon": "./assets/icon.png",
+  "assetBundlePatterns": ["**/*"],
+  "ios": {
+    "supportsTablet": false,
+    "bundleIdentifier": "com.example.pilotcalc",
+    "buildNumber": "1",
+    "infoPlist": {
+      "ITSAppUsesNonExemptEncryption": false,
+      "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+      "UIApplicationShortcutItems": [
+        {
+          "UIApplicationShortcutItemType": "pilotcalc.wind",
+          "UIApplicationShortcutItemTitle": "Wind triangle",
+          "UIApplicationShortcutItemSubtitle": "Heading & groundspeed",
+          "UIApplicationShortcutItemIconType": "UIApplicationShortcutIconTypeCompose"
+        },
+        {
+          "UIApplicationShortcutItemType": "pilotcalc.tod",
+          "UIApplicationShortcutItemTitle": "Top of descent",
+          "UIApplicationShortcutItemSubtitle": "Start down",
+          "UIApplicationShortcutItemIconType": "UIApplicationShortcutIconTypeArrowDown"
+        }
+      ]
+    }
+  },
+  "plugins": ["expo-build-properties"]
+}

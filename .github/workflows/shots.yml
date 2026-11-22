@@ -1,0 +1,91 @@
+name: shots
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNDLE_ID: ${{ vars.PILOTCALC_BUNDLE_ID }}
+  TEAM_ID: ${{ vars.PILOTCALC_TEAM_ID }}
+  EXPO_PUBLIC_SHOTS: "1"
+
+jobs:
+  screenshots:
+    runs-on: xcode-27
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci --legacy-peer-deps || npm install --no-audit --no-fund
+
+      - name: Prebuild iOS project
+        run: npx expo prebuild --platform ios --clean --non-interactive
+
+      - name: Pick a 6.9in simulator
+        id: sim
+        run: |
+          NAME=$(xcrun simctl list devices available | grep -o 'iPhone 1[6-9] Pro Max' | head -1)
+          if [ -z "$NAME" ]; then NAME=$(xcrun simctl list devices available | grep -o 'iPhone 1[6-9] Plus' | head -1); fi
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "using: $NAME"
+
+      - name: Build release app for simulator
+        run: |
+          set -o pipefail
+          cd ios
+          WORKSPACE=$(ls -d *.xcworkspace | head -1)
+          SCHEME="${WORKSPACE%.xcworkspace}"
+          xcodebuild build \
+            -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -20
+          APP=$(find "$RUNNER_TEMP/dd/Build/Products/Release-iphonesimulator" -maxdepth 1 -name "*.app")
+          ls -l "$APP/main.jsbundle" || echo "NO EMBEDDED BUNDLE"
+
+      - name: Boot simulator
+        run: |
+          xcrun simctl boot "${{ steps.sim.outputs.name }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.name }}" -b || true
+          xcrun simctl status_bar "${{ steps.sim.outputs.name }}" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4 || true
+
+      - name: Install, launch, burst capture
+        run: |
+          set -x
+          DEV="${{ steps.sim.outputs.name }}"
+          APP=$(find "$RUNNER_TEMP/dd/Build/Products/Release-iphonesimulator" -maxdepth 1 -name "*.app")
+          xcrun simctl install "$DEV" "$APP"
+          xcrun simctl launch --terminate-running-process "$DEV" "$BUNDLE_ID"
+          OUT="$RUNNER_TEMP/shots"
+          mkdir -p "$OUT"
+          # tour: Home 0s · Wind triangle 7s · Density altitude 14s · W&B 21s · Flight log 28s
+          for t in $(seq 1 40); do
+            xcrun simctl io "$DEV" screenshot "$OUT/f$(printf '%02d' $t).png" >/dev/null 2>&1
+            sleep 1
+          done
+          ls -1 "$OUT" | wc -l
+
+      - name: Crash reports
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p "$RUNNER_TEMP/crash"
+          find ~/Library/Logs/DiagnosticReports -type f -name 'PilotCalc*.ips' -mmin -20 -exec cp {} "$RUNNER_TEMP/crash/" \; 2>/dev/null || true
+          ls -l "$RUNNER_TEMP/crash" 2>/dev/null || true
+          for f in "$RUNNER_TEMP"/crash/*.ips; do
+            [ -f "$f" ] && { echo "=== $f"; head -c 2000 "$f"; echo; }
+          done
+          true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pilotcalc-shots
+          path: |
+            ${{ runner.temp }}/shots/*.png
+            ${{ runner.temp }}/crash/*.ips
+          if-no-files-found: warn
+          retention-days: 7
