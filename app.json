@@ -31,5 +31,14 @@
       ]
     }
   },
-  "plugins": ["expo-build-properties"]
+  "plugins": [
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "deploymentTarget": "16.0"
+        }
+      }
+    ]
+  ]
 }
