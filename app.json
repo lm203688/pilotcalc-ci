@@ -1,7 +1,7 @@
 {
   "name": "PilotCalc",
   "slug": "pilotcalc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "orientation": "portrait",
   "scheme": "pilotcalc",
   "userInterfaceStyle": "dark",
@@ -13,7 +13,7 @@
   "ios": {
     "supportsTablet": false,
     "bundleIdentifier": "com.example.pilotcalc",
-    "buildNumber": "3",
+    "buildNumber": "4",
     "infoPlist": {
       "ITSAppUsesNonExemptEncryption": false,
       "UISupportedInterfaceOrientations": [
