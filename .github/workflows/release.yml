@@ -137,6 +137,12 @@ jobs:
           echo "app=$APP"
           plutil -p "$APP/Info.plist" | grep -Ei 'CFBundleIdentifier|CFBundleVersion|CFBundleShortVersionString|UIApplicationShortcut' || true
           codesign -d --entitlements :- "$APP" 2>/dev/null | head -20 || true
+          echo "== UIScene gate =="
+          plutil -p "$APP/Info.plist" > "$RUNNER_TEMP/plist.txt"
+          grep -n "UIApplicationSceneManifest" "$RUNNER_TEMP/plist.txt" || { echo "FAIL: no scene manifest in signed ipa"; exit 1; }
+          sed -n '/UIApplicationSceneManifest/,+12p' "$RUNNER_TEMP/plist.txt"
+          grep -n "class SceneDelegate" ios/*/AppDelegate.swift || { echo "FAIL: SceneDelegate missing"; exit 1; }
+          echo "OK: signed ipa adopts UIScene lifecycle"
 
       - name: Upload to App Store Connect
         if: ${{ inputs.upload }}
