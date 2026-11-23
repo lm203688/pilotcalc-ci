@@ -1,20 +1,24 @@
 {
   "name": "PilotCalc",
   "slug": "pilotcalc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "orientation": "portrait",
   "scheme": "pilotcalc",
   "userInterfaceStyle": "dark",
   "newArchEnabled": true,
   "icon": "./assets/icon.png",
-  "assetBundlePatterns": ["**/*"],
+  "assetBundlePatterns": [
+    "**/*"
+  ],
   "ios": {
     "supportsTablet": false,
     "bundleIdentifier": "com.example.pilotcalc",
-    "buildNumber": "1",
+    "buildNumber": "2",
     "infoPlist": {
       "ITSAppUsesNonExemptEncryption": false,
-      "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait"
+      ],
       "UIApplicationShortcutItems": [
         {
           "UIApplicationShortcutItemType": "pilotcalc.wind",
@@ -32,6 +36,7 @@
     }
   },
   "plugins": [
+    "./plugins/withUIScene.cjs",
     [
       "expo-build-properties",
       {
