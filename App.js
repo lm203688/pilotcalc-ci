@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOOLS, GROUPS, byId } from './src/tools';
 import { convert, unitList } from './src/units';
 import * as fb from './src/feedback';
+import { useDuo } from './src/duo';
 
 const C = {
   bg: '#0E1216', card: '#161C22', cardEdge: '#232C34', text: '#F2F5F7', muted: '#8C99A6',
@@ -443,6 +444,15 @@ function Privacy({ go }) {
 // ---------------------------------------------------------------- root
 
 export default function App() {
+  const duo = useDuo();
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bg, paddingRight: duo.gutter }}>
+      <AppScreens />
+    </View>
+  );
+}
+
+function AppScreens() {
   const [route, setRoute] = useState({ name: 'home' });
   const [log, setLog] = useState([]);
   const [drafts, setDrafts] = useState([]);
