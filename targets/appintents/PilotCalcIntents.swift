@@ -20,12 +20,16 @@ enum FuelUnit: String, AppEnum {
 }
 
 @available(iOS 16.0, *)
-struct FuelTypeEntity: AppEntity {
+struct FuelTypeEntity: AppEntity, IndexedEntity {
   static var typeDisplayRepresentation: TypeDisplayRepresentation = TypeDisplayRepresentation(name: "Fuel grade")
   static var defaultQuery = FuelTypeQuery()
 
   let id: String
-  let summary: String
+
+  // Spotlight shows this title when the user searches system-wide; the key is a
+  // CSSearchableItemAttributeSet field, not the entity's own property name.
+  @Property(indexingKey: \.displayName)
+  var summary: String
   /// Nominal mass in pounds per US gallon at 15 °C.
   let poundsPerGallon: Double
 
